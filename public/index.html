@@ -38,8 +38,6 @@
         var socket = io();
 
         socket.on('packet', function(msg){
-            //    console.log(msg);
-            // $('#messages').append($('<li>').text(msg));
             if(projection) {
                 var lonlat = [msg.geo.ll[1], msg.geo.ll[0]];
                 var x = projection(lonlat)[0];
@@ -60,7 +58,7 @@
                         .duration(2000)
                         .each('end', function () {
                             d3.select(this).remove();
-                        })
+                        });
 
                 if (home) {
                     var route = {
