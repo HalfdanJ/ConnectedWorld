@@ -54,23 +54,18 @@ pcap_session.on('packet', function (raw_packet) {
     direction = 'receiving';
   }
 
-
+  //console.log(packet.link.ip.total_length)
   //If a remote IP was found
   if(ip){
     //Look in the cache
     if(cache[ip]){
-      if(cache[ip] != 'resolving'){
-
-        //Call the limiter so we don't send to many requests to the browser
-        cache[ip].limiter.removeTokens(1,function(err, remainingRequsts){
-          if(err){
-            console.log(err)
-          } else if(remainingRequsts >= 0){
-            io.emit('packet', cache[ip]);
-          }
-        })
-
+      //Call the limiter so we don't send to many requests to the browser
+      if(cache[ip].limiter.tryRemoveTokens(1)){
+        cache[ip].size = packet.link.ip.total_length;
+        io.emit('packet', cache[ip]);
       }
+
+
     } else {
 
       (function(_ip){
@@ -78,17 +73,17 @@ pcap_session.on('packet', function (raw_packet) {
 
         //Look up the geo location of the IP
         var geo = geoip.lookup(_ip);
-        cache[ip] = 'resolving';
-        require('dns').reverse(_ip,function(err, domains){
-          console.log(domains);
+        //  cache[ip] = 'resolving';
+        //  require('dns').reverse(_ip,function(err, domains){
+        //  console.log(domains);
 
-          var limiter = new RateLimiter(1, 500, true);
+        var limiter = new RateLimiter(1, 1000);
 
-          cache[ip] = {ip:_ip, geo: geo, domains:domains, limiter: limiter};
+        cache[ip] = {ip:_ip, geo: geo, /*domains:domains,*/ limiter: limiter, size: packet.link.ip.total_length};
 
-          //Emit the packet to the browser
-          io.emit('packet', cache[ip]);
-        })
+        //Emit the packet to the browser
+        io.emit('packet', cache[ip]);
+        //  })
 
       })(ip);
 
