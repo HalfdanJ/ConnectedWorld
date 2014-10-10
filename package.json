@@ -7,7 +7,7 @@
     "name" : "Jonas Jongejan"
     , "email" : "jonas@halfdanj.dk"
     , "url" : "http://halfdanj.com/"
-    }
+  },
   "dependencies": {
     "express": "^4.9.5",
     "externalip": "^0.0.1",
