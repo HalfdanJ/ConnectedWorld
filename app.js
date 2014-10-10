@@ -46,14 +46,15 @@ pcap_session.on('packet', function (raw_packet) {
   // Can both be the daddr (destination) or saddr (source)
   var ip;
   var direction;
-  if(packet.link.ip.daddr != localip){
-    ip = packet.link.ip.daddr;
-    direction = 'sending';
-  } else if(packet.link.ip.saddr != localip){
-    ip = packet.link.ip.saddr;
-    direction = 'receiving';
+  if(packet.link.ip) {
+    if(packet.link.ip.daddr != localip){
+      ip = packet.link.ip.daddr;
+      direction = 'sending';
+    } else if(packet.link.ip.saddr != localip){
+      ip = packet.link.ip.saddr;
+      direction = 'receiving';
+    }
   }
-
   //console.log(packet.link.ip.total_length)
   //If a remote IP was found
   if(ip){
